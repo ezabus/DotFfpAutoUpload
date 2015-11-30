@@ -47,10 +47,13 @@ public class DocParser {
 
     public static void main(String[] args) {
         List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
-        Question question = questions.get(0);
-        question.addWrightQuestion(0);
+        Question question = questions.get(3);
         List<NameValuePair> items =  question.getFormItems();
         items.forEach(System.out::println);
+        Uploader uploader = new Uploader();
+        uploader.login("zabus", "ZaBUS12$)");
+        uploader.initSesskey("506");
+        uploader.sendQuestion(question,"2939");
 //        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
 //        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);
     }

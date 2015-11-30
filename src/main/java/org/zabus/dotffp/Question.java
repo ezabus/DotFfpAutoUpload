@@ -72,8 +72,6 @@ public class Question {
 
     public List<String> setFractionCost(List<String> fractions) {
         String fraction = getFraction();
-        System.out.println("f = " + fraction);
-        System.out.println("numberOfQuestions = " + wrightNumbers.size());
         for(Integer i : wrightNumbers) {
             fractions.set(i, String.valueOf(fraction));
         }
@@ -82,7 +80,7 @@ public class Question {
 
     public String getFraction() {
         double fraction = (double) 1 / (double) wrightNumbers.size();
-        return String.format("%.7f", fraction);
+        return String.format("%.7f", fraction).replaceFirst(",",".");
     }
 
     public void addWrightQuestion(int numberOfQuestion) {

@@ -139,29 +139,6 @@ public class Uploader {
                 getPage("http://dot-ffp.spbgut.ru/course/view.php", "?id=" + courseID))));
     }
 
-    public void startUploading(String courseID) {
-        try {
-            CloseableHttpClient httpClient = getHttpClient(cookieStore);
-            HttpPost httpPost = new HttpPost("http://dot-ffp.spbgut.ru/course/view.php");
-            httpPost.setEntity(new UrlEncodedFormEntity(getEditFormParams(courseID, sesskey, "on")));
-            httpClient.execute(httpPost);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void confirmUploading(String courseID) {
-        try {
-            CloseableHttpClient httpClient = getHttpClient(cookieStore);
-            HttpPost httpPost = new HttpPost("http://dot-ffp.spbgut.ru/course/view.php");
-            httpPost.setEntity(new UrlEncodedFormEntity(getEditFormParams(courseID, sesskey, "off")));
-            httpClient.execute(httpPost);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void setSesskey(String sesskey) {
         Uploader.sesskey = sesskey;
     }
@@ -189,6 +166,35 @@ public class Uploader {
             e.printStackTrace();
         }
         return response;
+    }
+
+    public HttpResponse sendQuestion(Question question, String cmid) {
+        CloseableHttpClient httpClient = getHttpClient(cookieStore);
+        HttpResponse response = null;
+        try {
+            HttpPost httpPost = new HttpPost("http://dot-ffp.spbgut.ru/question/question.php");
+            List<NameValuePair> nvps = getDefoultFormPairs(cmid);
+            nvps.addAll(question.getFormItems());
+            nvps.forEach(System.out::println);
+            httpPost = setHeadersForQuestionPost(httpPost);
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+            response = httpClient.execute(httpPost);
+            System.out.println(getResponseAsString(response));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public List<NameValuePair> getDefoultFormPairs(String cmid) {
+        String url = "http://dot-ffp.spbgut.ru" +
+                "/question/question.php?" +
+                "returnurl=%2Fmod%2Fquiz%2Fedit.php%3F" +
+                "cmid%3D" + cmid + "%26cat%3D3340%252C6140%26" +
+                "qpage%3D0%26addonpage%3D1&" +
+                "cmid=" + cmid + "&appendqnumstring=addquestion&" +
+                "category=3340&qtype=multichoice&scrollpos=200";
+        return getQuestionEditFormPairs(getResponseAsString(getPage(url, "")));
     }
 
     public HttpPost setHeadersForQuestionPost(HttpPost httpRequest) {
