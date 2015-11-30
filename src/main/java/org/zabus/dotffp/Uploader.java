@@ -43,7 +43,6 @@ public class Uploader {
         uploader.initSesskey("506");
         //uploader.startUploading("506");
         HttpResponse response = uploader.sendQuestion("2939", "506");
-        System.out.println(response.getHeaders("Location")[0]);
         //uploader.getPage(response.getHeaders("Location")[0].toString(),"");
     }
 
@@ -182,10 +181,7 @@ public class Uploader {
             List<NameValuePair> nvps = getQuestionEditFormPairs(getResponseAsString(getPage(url, "")));
             nvps.addAll(getQuestionAnswerFormPairs());
             nvps.forEach(System.out::println);
-            //HttpParams params = new BasicHttpParams();
-            //httpPost.setParams(params);
             httpPost = setHeadersForQuestionPost(httpPost);
-            //params.setParameter("http.protocol.handle-redirects",false);
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
             response = httpClient.execute(httpPost);
             System.out.println(getResponseAsString(response));
@@ -197,11 +193,11 @@ public class Uploader {
 
     public HttpPost setHeadersForQuestionPost(HttpPost httpRequest) {
         httpRequest.setHeader("Referer", "http://dot-ffp.spbgut.ru/question/question.php?returnurl=%2Fmod%2Fquiz%2Fedit.php%3Fcmid%3D2939%26addonpage%3D1&cmid=2939&appendqnumstring=addquestion&category=3340&qtype=multichoice&scrollpos=200");
-        httpRequest.setHeader("Upgrade-Insecure-Requests", "1");
-        httpRequest.setHeader("Origin", "http://dot-ffp.spbgut.ru");
-        httpRequest.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpRequest.setHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
-        httpRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36");
+//        httpRequest.setHeader("Upgrade-Insecure-Requests", "1");
+//        httpRequest.setHeader("Origin", "http://dot-ffp.spbgut.ru");
+//        httpRequest.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        httpRequest.setHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
+//        httpRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36");
         return httpRequest;
     }
 
@@ -210,6 +206,8 @@ public class Uploader {
         nvps.add(new BasicNameValuePair("name", "Testing question"));
         nvps.add(new BasicNameValuePair("category", "3340,6140"));
         nvps.add(new BasicNameValuePair("questiontext[text]", "<p>automaicly added question<p>"));
+        nvps.add(new BasicNameValuePair("numhints", "0"));
+        nvps.add(new BasicNameValuePair("noanswers", "4"));
         nvps.add(new BasicNameValuePair("answer[0][text]","<p>option 1<p>"));
         nvps.add(new BasicNameValuePair("fraction[0]","1.0"));
         nvps.add(new BasicNameValuePair("answer[1][text]","<p>option 2<p>"));
@@ -218,15 +216,15 @@ public class Uploader {
         nvps.add(new BasicNameValuePair("fraction[2]","0.0"));
         nvps.add(new BasicNameValuePair("answer[3][text]","<p>option 4<p>"));
         nvps.add(new BasicNameValuePair("fraction[3]","0.0"));
-        nvps.add(new BasicNameValuePair("answer[4][text]","<p>option 5<p>"));
-        nvps.add(new BasicNameValuePair("fraction[4]","0.0"));
-        nvps.add(new BasicNameValuePair("feedback[0][text]","<p>feedback 1<p>"));
-        nvps.add(new BasicNameValuePair("feedback[1][text]","<p>feedback 2<p>"));
-        nvps.add(new BasicNameValuePair("feedback[2][text]","<p>feedback 3<p>"));
-        nvps.add(new BasicNameValuePair("feedback[3][text]","<p>feedback 4<p>"));
-        nvps.add(new BasicNameValuePair("feedback[4][text]","<p>feedback 4<p>"));
-        nvps.add(new BasicNameValuePair("hint[0][text]","<p>hint 1<p>"));
-        nvps.add(new BasicNameValuePair("hint[1][text]","<p>hint 2<p>"));
+//        nvps.add(new BasicNameValuePair("answer[4][text]","<p>option 5<p>"));
+//        nvps.add(new BasicNameValuePair("fraction[4]","0.0"));
+//        nvps.add(new BasicNameValuePair("feedback[0][text]","<p>feedback 1<p>"));
+//        nvps.add(new BasicNameValuePair("feedback[1][text]","<p>feedback 2<p>"));
+//        nvps.add(new BasicNameValuePair("feedback[2][text]","<p>feedback 3<p>"));
+//        nvps.add(new BasicNameValuePair("feedback[3][text]","<p>feedback 4<p>"));
+//        nvps.add(new BasicNameValuePair("feedback[4][text]","<p>feedback 4<p>"));
+//        nvps.add(new BasicNameValuePair("hint[0][text]","<p>hint 1<p>"));
+//        nvps.add(new BasicNameValuePair("hint[1][text]","<p>hint 2<p>"));
         nvps.add(new BasicNameValuePair("generalfeedback[text]","<p>configuring automatic question postiong<p>"));
         nvps.add(new BasicNameValuePair("correctfeedback[text]","<p>Ваш ответ верный.</p>"));
         nvps.add(new BasicNameValuePair("incorrectfeedback[text]","<p>Ваш ответ неверный.</p>"));
@@ -245,7 +243,8 @@ public class Uploader {
         Set<String> formItems = new HashSet<String>();
         inputs.stream()
                 .filter(input -> !input.attr("name").equals("name") && !input.attr("name").equals("addanswers")
-                        && !input.attr("name").equals("addhint") && !input.attr("name").equals("cancel"))
+                        && !input.attr("name").equals("addhint") && !input.attr("name").equals("cancel")
+                        && !input.attr("name").equals("noanswers") && !input.attr("name").equals("numhints"))
                 .forEach(input -> {
                             String name = input.attr("name");
                             if (!formItems.contains(name)) {

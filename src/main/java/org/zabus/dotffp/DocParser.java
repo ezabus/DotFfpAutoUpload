@@ -1,5 +1,6 @@
 package org.zabus.dotffp;
 
+import org.apache.http.NameValuePair;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.wp.usermodel.Paragraph;
@@ -45,12 +46,14 @@ public class DocParser {
 //    }
 
     public static void main(String[] args) {
-        getQuestions(args[0]).forEach(System.out::println);
+        List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
+        List<NameValuePair> items =  questions.get(0).getFormItems();
+        items.forEach(System.out::println);
 //        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
 //        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);
     }
 
-    public static Iterable<Question> getQuestions(String path) {
+    public static List<Question> getQuestions(String path) {
         List<XWPFTableRow> rows = getTable(getDoc(path)).getRows();
         List<Question> questions = new LinkedList<Question>();
         rows.stream().skip(2).forEach(row -> {
