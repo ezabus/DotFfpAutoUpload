@@ -47,7 +47,9 @@ public class DocParser {
 
     public static void main(String[] args) {
         List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
-        List<NameValuePair> items =  questions.get(0).getFormItems();
+        Question question = questions.get(0);
+        question.addWrightQuestion(0);
+        List<NameValuePair> items =  question.getFormItems();
         items.forEach(System.out::println);
 //        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
 //        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);

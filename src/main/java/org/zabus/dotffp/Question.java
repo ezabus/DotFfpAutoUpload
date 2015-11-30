@@ -65,17 +65,28 @@ public class Question {
     public List<String> initFractions() {
         List<String> fractions = new ArrayList<String>();
         for(int i = 0; i < options.size(); i++) {
-            fractions.add("0");
+            fractions.add("0.0");
         }
         return fractions;
     }
 
     public List<String> setFractionCost(List<String> fractions) {
-        double fraction = 1 / wrightNumbers.size();
+        String fraction = getFraction();
+        System.out.println("f = " + fraction);
+        System.out.println("numberOfQuestions = " + wrightNumbers.size());
         for(Integer i : wrightNumbers) {
             fractions.set(i, String.valueOf(fraction));
         }
         return fractions;
+    }
+
+    public String getFraction() {
+        double fraction = (double) 1 / (double) wrightNumbers.size();
+        return String.format("%.7f", fraction);
+    }
+
+    public void addWrightQuestion(int numberOfQuestion) {
+        wrightNumbers.add(numberOfQuestion);
     }
 
     public int getNumberOfQuestion() {
