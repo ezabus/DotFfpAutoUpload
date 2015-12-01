@@ -57,14 +57,22 @@ public class HtmlFormUtils {
                 .first()
                 .getElementsByTag("input");
         Set<String> formItems = new HashSet<String>();
-        inputs.stream().forEach(input -> {
-                    String name = input.attr("name");
-                    if (!formItems.contains(name)) {
-                        nvps.add(new BasicNameValuePair(name, input.attr("value")));
-                        formItems.add(name);
-                    }
-                }
-        );
+        inputs.stream()
+                .filter(input ->
+                        !input.attr("name").contains("rightanswer") && !input.attr("name").contains("generalfeedbac")
+                        && !input.attr("name").contains("graceperiod") && !input.attr("name").contains("delay")
+                        && !input.attr("name").equals("name") && !input.attr("name").equals("submitbutton")
+                        && !input.attr("name").contains("time") && !input.attr("name").contains("specificfeedback")
+                        && !input.attr("name").contains("during") && !input.attr("name").equals("boundary_add_fields")
+                        && !input.attr("name").equals("showdescription") && !input.attr("name").equals("cancel"))
+                .forEach(input -> {
+                            String name = input.attr("name");
+                            if (!formItems.contains(name)) {
+                                nvps.add(new BasicNameValuePair(name, input.attr("value")));
+                                formItems.add(name);
+                            }
+                        }
+                );
         return nvps;
     }
 

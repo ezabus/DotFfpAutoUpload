@@ -7,6 +7,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.wp.usermodel.Paragraph;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.*;
+import org.zabus.dotffp.util.ResponseUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,7 +46,7 @@ public class DocParser {
         MoodleClient client = new MoodleClient();
         client.login("zabus", "ZaBUS12$)");
         client.initSesskey("506");
-        client.createTopic("The brand new topic");
+        client.createTopic("The brand new topic", ResponseUtils.getResponseAsString(client.postJump("506")));
 //        client.sendQuestion(questions.get(1), "2941");
         //questions.forEach(question -> client.sendQuestion(question, "2941"));
     }

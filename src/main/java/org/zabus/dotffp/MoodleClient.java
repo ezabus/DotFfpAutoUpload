@@ -56,13 +56,45 @@ public class MoodleClient  extends HttpClient{
         items.forEach(System.out::println);
     }
 
-    public HttpResponse createTopic(String name) {
+    public HttpResponse createTopic(String name, String jumpResponse) {
         List<NameValuePair> nvps =
-                HtmlFormUtils.getQuestionEditFormPairs(getResponseAsString(executeGet("http://dot-ffp.spbgut.ru/course/modedit.php?add=quiz&type=&course=506&section=3&return=0&sr=0", "")));
+        //        HtmlFormUtils.getTopicEditForm(getResponseAsString(executeGet("http://dot-ffp.spbgut.ru/course/modedit.php?add=quiz&type=&course=506&section=3&return=0&sr=0", "")));
+                HtmlFormUtils.getTopicEditForm(jumpResponse);
         nvps.add(new BasicNameValuePair("name", "The new topic"));
         nvps.add(new BasicNameValuePair("navmethod", "free"));
-        nvps.add(new BasicNameValuePair("section", "3"));
-        return executePost("http://dot-ffp.spbgut.ru/course/mod.php?id=506&sesskey=a4shqa3TkW&sr=0&add=quiz&section=3", nvps, getHttpClient(cookieStore));
+        nvps.add(new BasicNameValuePair("overduehandling", "autosubmit"));
+        nvps.add(new BasicNameValuePair("preferredbehaviour", "deferredfeedback"));
+        nvps.add(new BasicNameValuePair("questiondecimalpoints", "-1"));
+        nvps.add(new BasicNameValuePair("questionsperpage", "0"));
+        nvps.add(new BasicNameValuePair("gradecat", "482"));
+        nvps.add(new BasicNameValuePair("grademethod", "1"));
+        nvps.add(new BasicNameValuePair("groupingid", "0"));
+        nvps.add(new BasicNameValuePair("attemptonlast", "0"));
+        nvps.add(new BasicNameValuePair("browsersecurity", "-"));
+        nvps.add(new BasicNameValuePair("visible", "1"));
+        nvps.add(new BasicNameValuePair("showblocks", "0"));
+        nvps.add(new BasicNameValuePair("showuserpicture", "0"));
+        nvps.add(new BasicNameValuePair("shuffleanswers", "1"));
+        nvps.add(new BasicNameValuePair("shufflequestions", "1"));
+        nvps.add(new BasicNameValuePair("decimalpoints", "2"));
+        nvps.add(new BasicNameValuePair("feedbacktext[0][text]", ""));
+        nvps.add(new BasicNameValuePair("feedbacktext[1][text]", ""));
+        nvps.add(new BasicNameValuePair("feedbacktext[2][text]", ""));
+        nvps.add(new BasicNameValuePair("feedbacktext[3][text]", ""));
+        nvps.add(new BasicNameValuePair("feedbacktext[4][text]", ""));
+        nvps.add(new BasicNameValuePair("introeditor[text]", ""));
+        nvps.add(new BasicNameValuePair("attempts", "0"));
+        nvps.forEach(System.out::println);
+        return executePost("http://dot-ffp.spbgut.ru/course/modedit.php", nvps, getHttpClient(cookieStore));
+    }
+
+    public HttpResponse postJump(String courseID) {
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("course", courseID));
+        nvps.add(new BasicNameValuePair("jump", "http://dot-ffp.spbgut.ru/course/mod.php?id=" +
+                 courseID +  "&sesskey=" + sesskey + "&sr=0&add=quiz&section=3"));
+        nvps.add(new BasicNameValuePair("sesskey", sesskey));
+        return executePost("http://dot-ffp.spbgut.ru/course/jumpto.php", nvps, getHttpClient(cookieStore));
     }
 
     public void initSesskey(String courseID) {
