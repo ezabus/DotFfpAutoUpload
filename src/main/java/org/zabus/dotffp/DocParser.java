@@ -45,7 +45,8 @@ public class DocParser {
         MoodleClient client = new MoodleClient();
         client.login("zabus", "ZaBUS12$)");
         client.initSesskey("506");
-        client.sendQuestion(questions.get(0), "2941");
+        client.createTopic("The brand new topic");
+//        client.sendQuestion(questions.get(1), "2941");
         //questions.forEach(question -> client.sendQuestion(question, "2941"));
     }
 
