@@ -24,42 +24,29 @@ public class DocParser {
     public static final String upperCaseAlphobet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String lowerCaseAlphobet = "abcdefghijklmnopqrstuvwxyz";
     public static final String typoAlphobet = "аbсdеfghijklmnopqrstuvwxyz";
+    
 //    public static void main(String[] args) {
-//        try {
-//            FileInputStream fis = new FileInputStream("C:/Users/user/Documents/Study/Kurs4/boltov/kpo.docx");
-//            XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
-//            XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(xdoc);
-//            XWPFTable table = xdoc.getTables().get(0);
-//            Iterable<XWPFTableRow> rows = table.getRows();
-//            int i = 0;
-//            for(XWPFTableRow row : rows) {
-//                Iterable<XWPFTableCell> cells = row.getTableCells();
-//                int j = 0;
-//                for(XWPFTableCell cell : cells) {
-//                    System.out.println(i + "." + j + " " + cell.getText());
-//                    j++;
-//                }
-//                i++;
-//            }
-//        } catch(Exception ex) {
-//            ex.printStackTrace();
-//        }
+//        List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
+//        //List<NameValuePair> items =  question.getFormItems();
+//        //items.forEach(System.out::println);
+//        Uploader uploader = new Uploader();
+//        uploader.login("zabus", "ZaBUS12$)");
+//        uploader.initSesskey("506");
+//        CloseableHttpClient client = uploader.getHttpClient(uploader.getCookieStore());
+//        questions.forEach(question ->
+//                uploader.fastSendQuestion(question, "2941", client));
+//        //uploader.sendQuestion(question,"2941");
+////        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
+////        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);
 //    }
 
-    
-    public static void main(String[] args) {
-        List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
-        //List<NameValuePair> items =  question.getFormItems();
-        //items.forEach(System.out::println);
-        Uploader uploader = new Uploader();
-        uploader.login("zabus", "ZaBUS12$)");
-        uploader.initSesskey("506");
-        CloseableHttpClient client = uploader.getHttpClient(uploader.getCookieStore());
-        questions.forEach(question ->
-                uploader.fastSendQuestion(question, "2941", client));
-        //uploader.sendQuestion(question,"2941");
-//        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
-//        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);
+    public static void main(String args[]) {
+        List<Question> questions = getQuestions(args[0]);
+        MoodleClient client = new MoodleClient();
+        client.login("zabus", "ZaBUS12$)");
+        client.initSesskey("506");
+        client.sendQuestion(questions.get(0), "2941");
+        //questions.forEach(question -> client.sendQuestion(question, "2941"));
     }
 
     public static List<Question> getQuestions(String path) {

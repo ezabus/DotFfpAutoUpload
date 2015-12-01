@@ -30,6 +30,7 @@ import java.util.Set;
 /**
  * Created by user on 25.11.2015.
  */
+@Deprecated
 public class Uploader {
 
     public BasicCookieStore cookieStore;
@@ -64,26 +65,6 @@ public class Uploader {
             CloseableHttpClient httpClient = getHttpClient(cookieStore);
             HttpGet httpGet = new HttpGet(url + urlParams);
             response = httpClient.execute(httpGet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return response;
-    }
-
-    public HttpResponse getCourseEditPage(String courseID, String sesskey) {
-        HttpResponse response = null;
-        try{
-            HttpPost httpPost = new HttpPost("http://dot-ffp.spbgut.ru/course/view.php");
-            httpPost.setEntity(new UrlEncodedFormEntity(getEditFormParams(courseID,sesskey, "on")));
-            CloseableHttpClient httpClient = getHttpClient(cookieStore);
-            HttpParams params = new BasicHttpParams();
-            params.setParameter("http.protocol.handle-redirects",false);
-            httpPost.setParams(params);
-            httpClient.execute(httpPost);
-            httpClient = getHttpClient(cookieStore);
-            HttpGet httpGet = new HttpGet("http://dot-ffp.spbgut.ru/course/view.php?id=" + courseID + "&notifyeditingon=1");
-            response = httpClient.execute(httpGet);
-            //System.out.println(getResponseAsString(response));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -216,11 +197,6 @@ public class Uploader {
 
     public HttpPost setHeadersForQuestionPost(HttpPost httpRequest) {
         httpRequest.setHeader("Referer", "http://dot-ffp.spbgut.ru/question/question.php?returnurl=%2Fmod%2Fquiz%2Fedit.php%3Fcmid%3D2939%26addonpage%3D1&cmid=2939&appendqnumstring=addquestion&category=3340&qtype=multichoice&scrollpos=200");
-//        httpRequest.setHeader("Upgrade-Insecure-Requests", "1");
-//        httpRequest.setHeader("Origin", "http://dot-ffp.spbgut.ru");
-//        httpRequest.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-//        httpRequest.setHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
-//        httpRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36");
         return httpRequest;
     }
 
