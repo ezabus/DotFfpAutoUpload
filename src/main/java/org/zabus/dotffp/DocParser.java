@@ -1,6 +1,7 @@
 package org.zabus.dotffp;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.wp.usermodel.Paragraph;
@@ -47,13 +48,15 @@ public class DocParser {
 
     public static void main(String[] args) {
         List<Question> questions = getQuestions(args[0]);//.forEach(System.out::println);
-        Question question = questions.get(3);
-        List<NameValuePair> items =  question.getFormItems();
-        items.forEach(System.out::println);
+        //List<NameValuePair> items =  question.getFormItems();
+        //items.forEach(System.out::println);
         Uploader uploader = new Uploader();
         uploader.login("zabus", "ZaBUS12$)");
         uploader.initSesskey("506");
-        uploader.sendQuestion(question,"2939");
+        CloseableHttpClient client = uploader.getHttpClient(uploader.getCookieStore());
+        questions.forEach(question ->
+                uploader.fastSendQuestion(question, "2941", client));
+        //uploader.sendQuestion(question,"2941");
 //        List<XWPFTableRow> rows = getTable(getDoc(args[0])).getRows();
 //        rows.stream().skip(2).forEach(DocParser::getWrightAnswers);
     }
@@ -62,7 +65,7 @@ public class DocParser {
         List<XWPFTableRow> rows = getTable(getDoc(path)).getRows();
         List<Question> questions = new LinkedList<Question>();
         rows.stream().skip(2).forEach(row -> {
-//            questions.add(new Question(getNumberOfQuestion(row), getQuestionText(row), getOptionA(row),
+//            questions.add(new Question(getNumberOfQuestion(row), getQuestionName(row), getOptionA(row),
 //                    getOptionB(row), getOptionC(row), getOptionD(row)));
             questions.add(new Question(getNumberOfQuestion(row), getQuestionText(row), getOptionsList(row),getWrightAnswers(row)));
         });

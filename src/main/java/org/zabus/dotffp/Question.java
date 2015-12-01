@@ -6,7 +6,6 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by user on 25.11.2015.
@@ -14,13 +13,17 @@ import java.util.stream.Collectors;
 public class Question {
 
     private int numberOfQuestion;
-    private String questionText;
+    private String questionName;
     private List<String> options;
     private List<Integer> wrightNumbers;
 
+    public Question() {
+
+    }
+
     public Question(int numberOfQuestion, String questionText, String optionA, String optionB, String optionC, String optionD) {
         this.numberOfQuestion = numberOfQuestion;
-        this.questionText = questionText;
+        this.questionName = questionText;
         options = new LinkedList<>();
         options.add(optionA);
         options.add(optionB);
@@ -30,25 +33,32 @@ public class Question {
 
     public Question(int numberOfQuestion, String questionText, List<String> options, List<Integer> wrightNumbers) {
         this.numberOfQuestion = numberOfQuestion;
-        this.questionText = questionText;
+        this.questionName = questionText;
         this.options = options;
         this.wrightNumbers = wrightNumbers;
     }
 
     public List<NameValuePair> getFormItems() {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair("name", questionText));
+        nvps.add(new BasicNameValuePair("name", questionName));
         nvps.add(new BasicNameValuePair("category", "3340,6140"));
-        nvps.add(new BasicNameValuePair("questiontext[text]", "<p>" + questionText + "<p>"));
+        nvps.add(new BasicNameValuePair("questiontext[text]", "<p>" + questionName + "<p>"));
         nvps.add(new BasicNameValuePair("numhints", "0"));
         nvps.add(new BasicNameValuePair("noanswers", String.valueOf(options.size())));
         nvps.add(new BasicNameValuePair("correctfeedback[text]","<p>Ваш ответ верный.</p>"));
         nvps.add(new BasicNameValuePair("incorrectfeedback[text]","<p>Ваш ответ неверный.</p>"));
         nvps.add(new BasicNameValuePair("partiallycorrectfeedback[text]","<p>Ваш ответ частично верный.</p>"));
         nvps.add(new BasicNameValuePair("answernumbering","none"));
-        nvps.addAll(options.stream().map(option -> new BasicNameValuePair("answer[" + 1 + "][text]", "<p>" + option + "<p>")).collect(Collectors.toList()));
+        nvps.add(new BasicNameValuePair("single","0"));
+        for(int i = 0; i < options.size(); i++) {
+            nvps.add(new BasicNameValuePair("answer[" + i + "][text]", "<p>" + options.get(i) + "<p>"));
+        }
         nvps.addAll(getFractions());
         return nvps;
+    }
+
+    public String getQuestionName() {
+        return (wrightNumbers.size() > 1) ? "Выберите один или несколько ответов:" : "Выберите один ответ:";
     }
 
     public List<NameValuePair> getFractions() {
@@ -79,8 +89,11 @@ public class Question {
     }
 
     public String getFraction() {
-        double fraction = (double) 1 / (double) wrightNumbers.size();
-        return String.format("%.7f", fraction).replaceFirst(",",".");
+        double fraction =  1.0 / (double) wrightNumbers.size();
+        int temp = (int) (fraction * 10000000);
+        fraction = (double) temp / (double) 10000000;
+        //return String.format("%.7f", fraction).replaceFirst(",",".");
+        return String.valueOf(fraction);
     }
 
     public void addWrightQuestion(int numberOfQuestion) {
@@ -96,11 +109,11 @@ public class Question {
     }
 
     public String getQuestionText() {
-        return questionText;
+        return questionName;
     }
 
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
+    public void setQuestionName(String questionName) {
+        this.questionName = questionName;
     }
 
     public List<String> getOptions() {
@@ -123,7 +136,7 @@ public class Question {
     public String toString() {
         return "Question{" +
                 "numberOfQuestion=" + numberOfQuestion +
-                ", questionText='" + questionText + '\'' +
+                ", questionName='" + questionName + '\'' +
                 ", options=" + options +
                 ", wrightNumbers=" + wrightNumbers +
                 '}';

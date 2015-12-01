@@ -32,14 +32,14 @@ import java.util.Set;
  */
 public class Uploader {
 
-    public static BasicCookieStore cookieStore;
+    public BasicCookieStore cookieStore;
     public static String sesskey;
 
     public static void main(String args[]) {
         Uploader uploader = new Uploader();
         uploader.login("zabus", "ZaBUS12$)");
         //confirm();
-        printCookies(cookieStore);
+        printCookies(uploader.getCookieStore());
         uploader.initSesskey("506");
         //uploader.startUploading("506");
         HttpResponse response = uploader.sendQuestion("2939", "506");
@@ -186,6 +186,23 @@ public class Uploader {
         return response;
     }
 
+    public HttpResponse fastSendQuestion(Question question, String cmid, CloseableHttpClient httpClient) {
+        HttpResponse response = null;
+        try {
+            HttpPost httpPost = new HttpPost("http://dot-ffp.spbgut.ru/question/question.php");
+            List<NameValuePair> nvps = getDefoultFormPairs(cmid);
+            nvps.addAll(question.getFormItems());
+            nvps.forEach(System.out::println);
+            httpPost = setHeadersForQuestionPost(httpPost);
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+            response = httpClient.execute(httpPost);
+            System.out.println(getResponseAsString(response));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     public List<NameValuePair> getDefoultFormPairs(String cmid) {
         String url = "http://dot-ffp.spbgut.ru" +
                 "/question/question.php?" +
@@ -286,5 +303,9 @@ public class Uploader {
                 .setDefaultCookieStore(cookieStore)
                 .build();
         return httpclient;
+    }
+
+    public BasicCookieStore getCookieStore() {
+        return cookieStore;
     }
 }
