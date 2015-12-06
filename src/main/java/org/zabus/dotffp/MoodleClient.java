@@ -25,9 +25,9 @@ public class MoodleClient  extends HttpClient{
 
     public static void main(String args[]) {
         MoodleClient moodleClient = new MoodleClient();
-        BasicCookieStore cookieStore = moodleClient.login("zabus", "ZaBUS12$)");
-        cookieStore.getCookies().forEach(System.out::println);
-        moodleClient.executeGet("http://dot-ffp.spbgut.ru/course/view.php?id=506", "");
+        moodleClient.login("zabus", "ZaBUS12$");
+        moodleClient.initSesskey("506");
+        System.out.println(moodleClient.createTopic("The brand new topic", "506", 5));
     }
 
     public BasicCookieStore login(String login, String password) {
@@ -56,11 +56,15 @@ public class MoodleClient  extends HttpClient{
         items.forEach(System.out::println);
     }
 
-    public HttpResponse createTopic(String name, String jumpResponse) {
+    public int createTopic(String topicName, String courseID, int section) {
+        return getIdOfTopic(createTopic(topicName, postJump(courseID, section)), section);
+    }
+
+    public HttpResponse createTopic(String name, HttpResponse jumpResponse) {
         List<NameValuePair> nvps =
         //        HtmlFormUtils.getTopicEditForm(getResponseAsString(executeGet("http://dot-ffp.spbgut.ru/course/modedit.php?add=quiz&type=&course=506&section=3&return=0&sr=0", "")));
-                HtmlFormUtils.getTopicEditForm(jumpResponse);
-        nvps.add(new BasicNameValuePair("name", "The new topic"));
+                HtmlFormUtils.getTopicEditForm(getResponseAsString(jumpResponse));
+        nvps.add(new BasicNameValuePair("name", name));
         nvps.add(new BasicNameValuePair("navmethod", "free"));
         nvps.add(new BasicNameValuePair("overduehandling", "autosubmit"));
         nvps.add(new BasicNameValuePair("preferredbehaviour", "deferredfeedback"));
@@ -88,11 +92,11 @@ public class MoodleClient  extends HttpClient{
         return executePost("http://dot-ffp.spbgut.ru/course/modedit.php", nvps, getHttpClient(cookieStore));
     }
 
-    public HttpResponse postJump(String courseID) {
+    public HttpResponse postJump(String courseID, int section) {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("course", courseID));
         nvps.add(new BasicNameValuePair("jump", "http://dot-ffp.spbgut.ru/course/mod.php?id=" +
-                 courseID +  "&sesskey=" + sesskey + "&sr=0&add=quiz&section=3"));
+                 courseID +  "&sesskey=" + sesskey + "&sr=0&add=quiz&section=" + section));
         nvps.add(new BasicNameValuePair("sesskey", sesskey));
         return executePost("http://dot-ffp.spbgut.ru/course/jumpto.php", nvps, getHttpClient(cookieStore));
     }
@@ -120,55 +124,4 @@ public class MoodleClient  extends HttpClient{
     public void setSesskey(String sesskey) {
         this.sesskey = sesskey;
     }
-
-//    public static String getResponseAsString(HttpResponse response) {
-//        String content = "";
-//        try {
-//            System.out.println(response.getStatusLine());
-//            BufferedReader rd = new BufferedReader(
-//                    new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-//            StringBuffer result = new StringBuffer();
-//            String line = "";
-//            while ((line = rd.readLine()) != null) {
-//                result.append(line);
-//            }
-//            content = new String(result);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return content;
-//    }
-//
-//    public List<NameValuePair> getDefoultFormPairs(String cmid) {
-//        String url = "http://dot-ffp.spbgut.ru" +
-//                "/question/question.php?" +
-//                "returnurl=%2Fmod%2Fquiz%2Fedit.php%3F" +
-//                "cmid%3D" + cmid + "%26cat%3D3340%252C6140%26" +
-//                "qpage%3D0%26addonpage%3D1&" +
-//                "cmid=" + cmid + "&appendqnumstring=addquestion&" +
-//                "category=3340&qtype=multichoice&scrollpos=200";
-//        return getQuestionEditFormPairs(getResponseAsString(executeGet(url, "")));
-//    }
-//
-//    public List<NameValuePair> getQuestionEditFormPairs(String response) {
-//        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-//        Document doc = Jsoup.parse(response);
-//        Elements inputs = doc.getElementsByClass("region-content")
-//                .first()
-//                .getElementsByTag("input");
-//        Set<String> formItems = new HashSet<String>();
-//        inputs.stream()
-//                .filter(input -> !input.attr("name").equals("name") && !input.attr("name").equals("addanswers")
-//                        && !input.attr("name").equals("addhint") && !input.attr("name").equals("cancel")
-//                        && !input.attr("name").equals("noanswers") && !input.attr("name").equals("numhints"))
-//                .forEach(input -> {
-//                            String name = input.attr("name");
-//                            if (!formItems.contains(name)) {
-//                                nvps.add(new BasicNameValuePair(name, input.attr("value")));
-//                                formItems.add(name);
-//                            }
-//                        }
-//                );
-//        return nvps;
-//    }
 }

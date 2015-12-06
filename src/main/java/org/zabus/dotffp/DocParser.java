@@ -7,15 +7,14 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.wp.usermodel.Paragraph;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.*;
+import org.zabus.dotffp.util.ParserUtils;
 import org.zabus.dotffp.util.ResponseUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by user on 25.11.2015.
@@ -43,12 +42,22 @@ public class DocParser {
 
     public static void main(String args[]) {
         List<Question> questions = getQuestions(args[0]);
+        questions = setTopics(questions);
+        Map<String,List<Question>> topicQuestion = questions.stream().collect(Collectors.groupingBy(Question::getTopicName));
+        topicQuestion.forEach((topicName,questionList) -> System.out.println(topicName + " " + questionList.size()));
+        questions.forEach(System.out::println);
         MoodleClient client = new MoodleClient();
         client.login("zabus", "ZaBUS12$)");
         client.initSesskey("506");
-        client.createTopic("The brand new topic", ResponseUtils.getResponseAsString(client.postJump("506")));
-//        client.sendQuestion(questions.get(1), "2941");
+        //client.createTopic("The topic", client.postJump("506"));
+        //client.sendQuestion(questions.get(1), "2941");
         //questions.forEach(question -> client.sendQuestion(question, "2941"));
+    }
+
+    public static Map<String, List<Question>> getTopicQuestionMap(String pathToFile) {
+        List<Question> questions = getQuestions(pathToFile);
+        questions = setTopics(questions);
+        return questions.stream().collect(Collectors.groupingBy(Question::getTopicName));
     }
 
     public static List<Question> getQuestions(String path) {
@@ -57,9 +66,26 @@ public class DocParser {
         rows.stream().skip(2).forEach(row -> {
 //            questions.add(new Question(getNumberOfQuestion(row), getQuestionName(row), getOptionA(row),
 //                    getOptionB(row), getOptionC(row), getOptionD(row)));
-            questions.add(new Question(getNumberOfQuestion(row), getQuestionText(row), getOptionsList(row),getWrightAnswers(row)));
+            Question question = new Question(getNumberOfQuestion(row), getQuestionText(row), getOptionsList(row),getWrightAnswers(row));
+            question.setTopicName(getTopicName(row));
+            questions.add(question);
         });
         return questions;
+    }
+
+    public static List<Question> setTopics(List<Question> questions) {
+        String curTopic = questions.get(0).getTopicName();
+        for(Question question : questions) {
+            if(!question.getTopicName().equals(curTopic) && !question.getTopicName().equals("")) {
+                curTopic = question.getTopicName();
+            }
+            question.setTopicName(curTopic);
+        }
+        return questions;
+    }
+
+    public static String getTopicName(XWPFTableRow row) {
+        return ParserUtils.trimTopicName(row.getTableCells().get(0).getText());
     }
 
     public static XWPFDocument getDoc(String path) {

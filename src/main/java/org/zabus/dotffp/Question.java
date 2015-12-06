@@ -14,6 +14,7 @@ public class Question {
 
     private int numberOfQuestion;
     private String questionName;
+    private String topicName;
     private List<String> options;
     private List<Integer> wrightNumbers;
 
@@ -132,10 +133,19 @@ public class Question {
         this.wrightNumbers = wrightNumbers;
     }
 
+    public String getTopicName() {
+        return topicName;
+    }
+
+    public void setTopicName(String topicName) {
+        this.topicName = topicName;
+    }
+
     @Override
     public String toString() {
         return "Question{" +
                 "numberOfQuestion=" + numberOfQuestion +
+                ", topicName='" + topicName + '\'' +
                 ", questionName='" + questionName + '\'' +
                 ", options=" + options +
                 ", wrightNumbers=" + wrightNumbers +

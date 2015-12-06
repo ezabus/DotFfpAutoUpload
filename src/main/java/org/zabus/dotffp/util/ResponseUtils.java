@@ -1,6 +1,8 @@
 package org.zabus.dotffp.util;
 
 import org.apache.http.HttpResponse;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,5 +29,18 @@ public class ResponseUtils {
             e.printStackTrace();
         }
         return content;
+    }
+
+    public static int getIdOfTopic(HttpResponse response, int section) {
+        String page = getResponseAsString(response);
+        Document doc = Jsoup.parse(page);
+        String moduleID = doc.getElementsByClass("topics")
+                                .first()
+                                .getElementsByClass("section-" + section)
+                                .first()
+                                .getElementsByClass("modtype_quiz")
+                                .first()
+                                .id();
+        return Integer.parseInt(moduleID.substring(moduleID.lastIndexOf('-')));
     }
 }
