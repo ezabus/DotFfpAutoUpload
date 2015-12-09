@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.zabus.dotffp.HttpClient;
+import org.zabus.dotffp.MoodleClient;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,19 +18,47 @@ import java.util.Set;
  */
 public class HtmlFormUtils {
 
+    public static void main(String args[]) {
+        MoodleClient client = new MoodleClient();
+        client.login("zabus", "ZaBUS12$)");
+        client.initSesskey("508");
+        getDefoultFormPairs("2996", client).forEach(System.out::println);
+        //System.out.println(getCategory("2996", client));
+    }
+
+//    public static List<NameValuePair> getDefoultFormPairs(String cmid, HttpClient httpClient) {
+//        String url = "http://dot-ffp.spbgut.ru" +
+//                "/question/question.php?" +
+//                "returnurl=%2Fmod%2Fquiz%2Fedit.php%3F" +
+//                "cmid%3D" + cmid + "%26cat%3D3340%252C6140%26" +
+//                "qpage%3D0%26addonpage%3D1&" +
+//                "cmid=" + cmid + "&appendqnumstring=addquestion&" +
+//                "category=3340&qtype=multichoice&scrollpos=200";
+//
+//        return getQuestionEditFormPairs(ResponseUtils.getResponseAsString(httpClient.executeGet(url, "")));
+//    }
+
     public static List<NameValuePair> getDefoultFormPairs(String cmid, HttpClient httpClient) {
         String url = "http://dot-ffp.spbgut.ru" +
                 "/question/question.php?" +
                 "returnurl=%2Fmod%2Fquiz%2Fedit.php%3F" +
-                "cmid%3D" + cmid + "%26cat%3D3340%252C6140%26" +
                 "qpage%3D0%26addonpage%3D1&" +
                 "cmid=" + cmid + "&appendqnumstring=addquestion&" +
-                "category=3340&qtype=multichoice&scrollpos=200";
+                "category=" + getCategory(cmid, httpClient) +
+                "&qtype=multichoice&scrollpos=200";
 
         return getQuestionEditFormPairs(ResponseUtils.getResponseAsString(httpClient.executeGet(url, "")));
     }
 
-    //public
+    public static String getCategory(String cmid, HttpClient httpClient) {
+        //http://dot-ffp.spbgut.ru/mod/quiz/edit.php?cmid=2996
+        Document doc = Jsoup.parse(ResponseUtils.getResponseAsString(
+                httpClient.executeGet("http://dot-ffp.spbgut.ru/mod/quiz/edit.php?cmid=", cmid)));
+        return doc.getElementsByClass("singlebutton").first()
+                .getElementsByAttributeValue("name", "category").first()
+                .attr("value");
+
+    }
 
     public static List<NameValuePair> getQuestionEditFormPairs(String response) {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -50,7 +79,15 @@ public class HtmlFormUtils {
                             }
                         }
                 );
+        nvps.add(getCategoryFormPair(doc));
         return nvps;
+    }
+
+    public static NameValuePair getCategoryFormPair(Document document) {
+        String value = document.getElementsByClass("fquestioncategory").first()
+                .getElementsByTag("option").first()
+                .attr("value");
+        return new BasicNameValuePair("category", value);
     }
 
     public static List<NameValuePair> getTopicEditForm(String response) {

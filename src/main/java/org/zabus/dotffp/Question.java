@@ -42,7 +42,6 @@ public class Question {
     public List<NameValuePair> getFormItems() {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("name", questionName));
-        nvps.add(new BasicNameValuePair("category", "3340,6140"));
         nvps.add(new BasicNameValuePair("questiontext[text]", "<p>" + questionName + "<p>"));
         nvps.add(new BasicNameValuePair("numhints", "0"));
         nvps.add(new BasicNameValuePair("noanswers", String.valueOf(options.size())));
