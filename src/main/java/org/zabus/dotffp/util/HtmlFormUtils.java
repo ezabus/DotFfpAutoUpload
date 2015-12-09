@@ -25,8 +25,11 @@ public class HtmlFormUtils {
                 "qpage%3D0%26addonpage%3D1&" +
                 "cmid=" + cmid + "&appendqnumstring=addquestion&" +
                 "category=3340&qtype=multichoice&scrollpos=200";
+
         return getQuestionEditFormPairs(ResponseUtils.getResponseAsString(httpClient.executeGet(url, "")));
     }
+
+    //public
 
     public static List<NameValuePair> getQuestionEditFormPairs(String response) {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();

@@ -25,9 +25,13 @@ public class MoodleClient  extends HttpClient{
 
     public static void main(String args[]) {
         MoodleClient moodleClient = new MoodleClient();
-        moodleClient.login("zabus", "ZaBUS12$");
-        moodleClient.initSesskey("506");
-        System.out.println(moodleClient.createTopic("The brand new topic", "506", 5));
+        moodleClient.login("zabus", "ZaBUS12$)");
+        moodleClient.initSesskey("508");
+        List<Question> questions = DocParser.getQuestions("C:/Users/user/Documents/Study/Kurs4/boltov/aisd.docx");
+        List<NameValuePair> nvps = HtmlFormUtils.getDefoultFormPairs("2996",moodleClient);
+        nvps.addAll(questions.get(0).getFormItems());
+        nvps.forEach(System.out::println);
+
     }
 
     public BasicCookieStore login(String login, String password) {
@@ -48,6 +52,15 @@ public class MoodleClient  extends HttpClient{
         List<NameValuePair> nvps = HtmlFormUtils.getDefoultFormPairs(cmid, this);
         nvps.addAll(question.getFormItems());
         return executePost(questionURL, nvps, getHttpClient(cookieStore));
+    }
+
+    public void sendQuestions(Iterable<Question> questions, String cmid) {
+        CloseableHttpClient httpClient = getHttpClient(cookieStore);
+        questions.forEach(question -> {
+            List<NameValuePair> nvps = HtmlFormUtils.getDefoultFormPairs(cmid, this);
+            nvps.addAll(question.getFormItems());
+            executePost("http://dot-ffp.spbgut.ru/question/question.php", nvps, httpClient);
+        });
     }
 
     public void printTopicCreateForm() {
