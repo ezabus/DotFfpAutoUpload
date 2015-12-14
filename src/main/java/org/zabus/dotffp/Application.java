@@ -3,7 +3,6 @@ package org.zabus.dotffp;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 /**
  * Created by user on 03.12.2015.
