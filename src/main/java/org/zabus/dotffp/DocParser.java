@@ -108,7 +108,7 @@ public class DocParser {
     }
 
     public static Integer getNumberOfQuestion(XWPFTableRow row) {
-        return Integer.parseInt(row.getTableCells().get(1).getText());
+        return Integer.parseInt(row.getTableCells().get(1).getText().trim());
     }
 
     public static String getQuestionText(XWPFTableRow row) {
